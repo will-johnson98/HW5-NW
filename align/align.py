@@ -115,6 +115,9 @@ class NeedlemanWunsch:
          	(alignment score, seqA alignment, seqB alignment) : Tuple[float, str, str]
          		the score and corresponding strings for the alignment of seqA and seqB
         """
+        if not seqA or not seqB:
+            raise ValueError("You gotta give me two sequences, bruh!")
+        
         # Resetting alignment in case method is called more than once
         self.seqA_align = ""
         self.seqB_align = ""
@@ -126,14 +129,66 @@ class NeedlemanWunsch:
         self._seqA = seqA
         self._seqB = seqB
         
-        # TODO: Initialize matrix private attributes for use in alignment
+        # Initialize matrix private attributes for use in alignment
         # create matrices for alignment scores, gaps, and backtracing
-        pass
+        lenA, lenB = len(seqA), len(seqB)
 
+        if lenA == 0 or lenB == 0:
+            raise ValueError("One of your sequences is empty, bruh!")
         
-        # TODO: Implement global alignment here
-        pass      		
-        		    
+        align_mat_shape = (lenA + 1, lenB + 1)
+        self._align_matrix = np.zeros(align_mat_shape)
+        self._back = np.empty(align_mat_shape, dtype=object)
+        self._gaps = np.zeros(align_mat_shape, dtype=int)
+        
+        # first row, first column, boooorrrriiinnggg
+        for i in range(1, lenA + 1):
+            self.align_matrix[i, 0] = self.gap_open + i * self.gap_extend
+            self._gaps[i, 0] = 1 # gaparooni
+            self._back[i, 0], = None 
+
+        for j in range(1, lenB + 1):
+            self._align_matrix[0, j] = self.gap_open + j * self.gap_extend
+            self._gaps[0, j] = 1 # gaparooni
+            self._back[0, j] = None
+
+        # Implement global alignment here
+        for i in range(1, lenA + 1):
+            for j in range(1, lenB + 1):
+                match_score = self.sub_dict.get((seqA[i - 1], seqB[j - 1]))  # Substitution score
+
+                # Calculate scores for the three possible directions
+                move_diagonal = self._align_matrix[i - 1, j - 1] + match_score
+
+                move_up = self._align_matrix[i - 1, j] + (
+                    self.gap_open + self.gap_extend 
+                    if self._gaps[i - 1, j] == 0 else self.gap_extend
+                )
+
+                move_left = self._align_matrix[i, j - 1] + (
+                    self.gap_open + self.gap_extend 
+                    if self._gaps[i, j - 1] == 0 else self.gap_extend
+                )
+
+                # Choose the slayest (read: highest) score
+                slayest_score = max(move_diagonal, move_up, move_left)
+
+                # Update the backtrace matrix and direction
+                if slayest_score == move_diagonal:
+                    self._back[i, j] = (i - 1, j - 1)  # Diagonal
+                    self._gaps[i, j] = 0  # No gap
+                elif slayest_score == move_up:
+                    self._back[i, j] = (i - 1, j)  # Up
+                    self._gaps[i, j] = 1  # Gap
+                elif slayest_score == move_left:
+                    self._back[i, j] = (i, j - 1)  # Left
+                    self._gaps[i, j] = 1  # Gap
+                else:
+                    raise RuntimeError("Something about my backtracing scores is off. Try again?")
+
+                self._align_matrix[i, j] = slayest_score
+
+        self.alignment_score = self._align_matrix[lenA, lenB]      		
         return self._backtrace()
 
     def _backtrace(self) -> Tuple[float, str, str]:

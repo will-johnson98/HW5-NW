@@ -205,8 +205,51 @@ class NeedlemanWunsch:
          	(alignment score, seqA alignment, seqB alignment) : Tuple[float, str, str]
          		the score and corresponding strings for the alignment of seqA and seqB
         """
-        pass
-
+        # Start from the bottom right corner
+        i, j = len(self._seqA), len(self._seqB)
+        
+        # Initialize empty alignment strings
+        seqA_align = []
+        seqB_align = []
+        
+        # Trace back until we hit the top left corner
+        while i > 0 or j > 0:
+            # Get the next position from the backtrace matrix
+            next_pos = self._back[i, j]
+            
+            if next_pos is None:
+                # We're at the edge of the matrix, handle remaining sequence
+                while i > 0:
+                    seqA_align.append(self._seqA[i-1])
+                    seqB_align.append('-')
+                    i -= 1
+                while j > 0:
+                    seqA_align.append('-')
+                    seqB_align.append(self._seqB[j-1])
+                    j -= 1
+                break
+                
+            prev_i, prev_j = next_pos
+            
+            if i == prev_i:
+                # Horizontal move (gap in seqA)
+                seqA_align.append('-')
+                seqB_align.append(self._seqB[j-1])
+            elif j == prev_j:
+                # Vertical move (gap in seqB)
+                seqA_align.append(self._seqA[i-1])
+                seqB_align.append('-')
+            else:
+                # Diagonal move (match/mismatch)
+                seqA_align.append(self._seqA[i-1])
+                seqB_align.append(self._seqB[j-1])
+                
+            i, j = prev_i, prev_j
+        
+        # Reverse the alignments (since we built them backwards)
+        self.seqA_align = ''.join(reversed(seqA_align))
+        self.seqB_align = ''.join(reversed(seqB_align))
+        
         return (self.alignment_score, self.seqA_align, self.seqB_align)
 
 

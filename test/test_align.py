@@ -32,7 +32,7 @@ def test_nw_alignment():
         [-12, -6, -6, -7],
         [-13, -7, 10, -1],
         [-14, -8, -1, 15]
-    ])
+    ], dtype=float)
     
     # Assert alignment matrix matches expected
     np.testing.assert_array_almost_equal(nw._align_matrix, expected_align)

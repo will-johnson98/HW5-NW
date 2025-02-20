@@ -35,6 +35,7 @@ def test_nw_alignment():
     ], dtype=np.float32)
     
     # Assert alignment matrix matches expected
+    print(nw._align_matrix)
     np.testing.assert_array_almost_equal(nw._align_matrix, expected_align)
     
 

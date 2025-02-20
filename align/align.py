@@ -143,9 +143,9 @@ class NeedlemanWunsch:
         
         # first row, first column, boooorrrriiinnggg
         for i in range(1, lenA + 1):
-            self.align_matrix[i, 0] = self.gap_open + i * self.gap_extend
+            self._align_matrix[i, 0] = self.gap_open + i * self.gap_extend
             self._gaps[i, 0] = 1 # gaparooni
-            self._back[i, 0], = None 
+            self._back[i, 0] = None 
 
         for j in range(1, lenB + 1):
             self._align_matrix[0, j] = self.gap_open + j * self.gap_extend

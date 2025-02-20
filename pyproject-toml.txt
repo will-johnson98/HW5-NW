@@ -1,0 +1,15 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "nw_align"
+authors = [{name = "Will", email = "your@email.com"}]
+dynamic = ["version", "description"]
+dependencies = [
+    "numpy",
+    "pytest"
+]
+
+[project.scripts]
+nw_align = "main:main"

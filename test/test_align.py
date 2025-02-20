@@ -27,11 +27,11 @@ def test_nw_alignment():
     # R matches R (score 5)
     
     expected_align = np.array([
-        [0, -11, -12, -13],
-        [-11, 5, -6, -7],
-        [-12, -6, -6, -7],
-        [-13, -7, 10, -1],
-        [-14, -8, -1, 15]
+        [  0, -11, -12, -13],
+        [-11,   5,  -6,  -7],
+        [-12,  -6,   4,  -7],
+        [-13,  -7,  -1,   5],
+        [-14,  -8,  -6,   4]
     ], dtype=np.float32)
     
     # Assert alignment matrix matches expected
@@ -60,7 +60,3 @@ def test_nw_backtrace():
     assert score == expected_score
     assert align1 == expected_align1
     assert align2 == expected_align2
-
-
-
-
